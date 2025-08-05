@@ -2,6 +2,8 @@
 
 Implement RBAC using Jwt token and ASP.NET Core Web API for learning. 
 
+Update read me.
+
 #### Features : 
 - Jwt token configuration and generator
 - Role base authorization
