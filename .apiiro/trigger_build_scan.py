@@ -34,6 +34,8 @@ def main():
         
         if response.status_code == 200:
             print("Scan triggered successfully!")
+            print(f"Response content: '{response.text}'")
+            print(f"Response headers: {dict(response.headers)}")
             
             # Get buildId from API response - fail if not present
             try:
