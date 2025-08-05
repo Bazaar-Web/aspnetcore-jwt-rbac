@@ -2,7 +2,7 @@ name: Apiiro Security Scan Trigger
 
 on:
   push:
-    branches: [ main, develop, master ]
+    branches: [ main ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:  # Allow manual triggering
@@ -31,7 +31,7 @@ jobs:
       env:
         APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
         GITHUB_SHA: ${{ github.sha }}
-        GITHUB_REPOSITORY_URL: ${{ github.repositoryUrl }}
+        GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
 
       run: |
         echo "Starting Apiiro build scan..."

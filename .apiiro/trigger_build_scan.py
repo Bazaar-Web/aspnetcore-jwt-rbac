@@ -27,7 +27,7 @@ def main():
     
     try:
         response = requests.post(
-            f"{api_url}/rest-api/v1/buildscan/builds",
+            f"{api_url}/rest-api/v1/buildScan/builds",
             json=payload,
             headers=headers,
         )
