@@ -39,5 +39,5 @@ jobs:
         
     - name: Use Build ID in next step
       run: |
-        echo "Build ID from previous step: ${{ steps.trigger_scan.outputs.build_id }}"
+        echo "Build ID from previous step: ${{ steps.trigger_build_scans.outputs.build_id }}"
         # You can now use this build_id in other API calls
