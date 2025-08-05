@@ -1,0 +1,43 @@
+name: Apiiro Security Scan Trigger
+
+on:
+  push:
+    branches: [ main, develop, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-scan:
+    name: Apiiro Build Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: Trigger Apiiro Build Scan
+      id: trigger_build_scans
+      env:
+        APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_REPOSITORY_URL: ${{ github.repositoryUrl }}
+
+      run: |
+        echo "Starting Apiiro build scan..."
+        python .apiiro/trigger_build_scan.py
+        
+    - name: Use Build ID in next step
+      run: |
+        echo "Build ID from previous step: ${{ steps.trigger_scan.outputs.build_id }}"
+        # You can now use this build_id in other API calls
