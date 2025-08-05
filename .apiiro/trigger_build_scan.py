@@ -4,7 +4,7 @@ import requests
 
 def main():
     # Get required environment variables
-    api_url = 'https://staging.apiiro.com'
+    api_url = 'https://app-staging.apiiro.com'
     token = os.getenv('APIIRO_TOKEN')
     commit_sha = os.getenv('GITHUB_SHA')
     repo_url = os.getenv('GITHUB_REPOSITORY_URL')
