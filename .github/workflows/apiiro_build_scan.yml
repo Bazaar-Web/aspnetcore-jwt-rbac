@@ -27,7 +27,7 @@ jobs:
         pip install requests
         
     - name: Trigger Apiiro Build Scan
-      id: trigger_build_scans
+      id: trigger_build_scan
       env:
         APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
         GITHUB_SHA: ${{ github.sha }}
@@ -37,7 +37,20 @@ jobs:
         echo "Starting Apiiro build scan..."
         python .apiiro/trigger_build_scan.py
         
-    - name: Use Build ID in next step
+    - name: Get Build Scan Results
+      id: get_scan_results
+      env:
+        APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
+        BUILD_ID: ${{ steps.trigger_build_scan.outputs.build_id }}
       run: |
-        echo "Build ID from previous step: ${{ steps.trigger_build_scans.outputs.build_id }}"
-        # You can now use this build_id in other API calls
+        echo "Getting scan results..."
+        python .apiiro/get_build_scan_results.py
+
+    - name: Upload Scan Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: scan-results
+        path: build_scan_results.json
+        retention-days: 30
+        if-no-files-found: ignore
