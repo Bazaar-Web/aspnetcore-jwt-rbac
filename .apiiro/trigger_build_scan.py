@@ -37,15 +37,11 @@ def main():
             print(f"Response content: '{response.text}'")
             print(f"Response headers: {dict(response.headers)}")
             
-            # Get buildId from API response - fail if not present
-            try:
-                response_data = response.json()
-                if 'buildId' not in response_data:
-                    print("Error: API response missing buildId field")
-                    return 1
-                returned_build_id = response_data['buildId']
-            except Exception as e:
-                print(f"Error parsing API response: {e}")
+            # The API returns the buildId directly as plain text
+            returned_build_id = response.text.strip()
+            
+            if not returned_build_id:
+                print("Error: API returned empty buildId")
                 return 1
             
             print(f"Build ID: {returned_build_id}")
