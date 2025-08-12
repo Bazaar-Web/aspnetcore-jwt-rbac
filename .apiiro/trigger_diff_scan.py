@@ -44,8 +44,11 @@ def main():
         if response.status_code == 200:
             print("Diff scan triggered successfully!")
             
+            print(response)
+
             # The API should return a job ID
             response_data = response.json()
+            print(response_data)
             job_id = response_data.get('jobId')
             
             if not job_id:
