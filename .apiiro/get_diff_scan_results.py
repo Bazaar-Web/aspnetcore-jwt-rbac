@@ -35,7 +35,7 @@ def main():
         
         try:
             response = requests.get(
-                f"{api_url}/rest-api/v1/diffScans/{job_id}",
+                f"{api_url}/rest-api/v1/diffScan/{job_id}/results",
                 headers=headers,
                 timeout=30
             )
@@ -48,14 +48,9 @@ def main():
                     print(response.text)
                     scan_results = response.json()
                     
-                    # Check if scan passed - adjust this based on actual API response structure
-                    scan_passed = True  # Default assumption
-                    if 'status' in scan_results:
-                        scan_passed = scan_results.get('status') == 'passed'
-                    elif 'scanPassed' in scan_results:
-                        scan_passed = scan_results.get('scanPassed')
-                    elif 'buildPassed' in scan_results:
-                        scan_passed = scan_results.get('buildPassed')
+                    # Check the result field - if it's "Block", the scan failed
+                    result = scan_results.get('result')
+                    scan_passed = result != 'Block'
                     
                     # Save results as artifact
                     try:
@@ -66,11 +61,25 @@ def main():
                     except Exception as e:
                         print(f"Warning: Could not save results file: {e}")
                     
+                    # Print summary information
+                    if 'summary' in scan_results:
+                        print(f"Scan Summary:\n{scan_results['summary']}")
+                    
+                    if 'scanUrl' in scan_results:
+                        print(f"View detailed results: {scan_results['scanUrl']}")
+                    
                     if scan_passed:
-                        print("DIFF SCAN PASSED - No blocking issues found")
+                        print(f"DIFF SCAN PASSED - Result: {result}")
                         return 0
                     else:
-                        print("DIFF SCAN FAILED - Blocking issues found")
+                        print(f"DIFF SCAN FAILED - Result: {result}")
+                        if 'materialChanges' in scan_results:
+                            blocking_changes = [change for change in scan_results['materialChanges'] 
+                                              if change.get('action') == 'Block' and change.get('count', 0) > 0]
+                            if blocking_changes:
+                                print("Blocking issues found:")
+                                for change in blocking_changes:
+                                    print(f"  - {change.get('label', 'Unknown')}: {change.get('count', 0)} issues")
                         return 1
                         
                 except Exception as e:
