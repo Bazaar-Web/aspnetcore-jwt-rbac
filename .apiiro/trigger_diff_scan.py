@@ -45,6 +45,7 @@ def main():
             print("Diff scan triggered successfully!")
             
             print(response)
+            print(response.text)
 
             # The API should return a job ID
             response_data = response.json()
