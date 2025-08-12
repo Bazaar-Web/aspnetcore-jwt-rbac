@@ -2,10 +2,8 @@ name: Apiiro Security Scan Trigger
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   build-scan:
