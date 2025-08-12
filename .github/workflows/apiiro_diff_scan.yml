@@ -1,17 +1,19 @@
-name: Apiiro Build Scan
+name: Apiiro Diff Scan
 
 on:
   pull_request:
   workflow_dispatch:
 
 jobs:
-  build-scan:
-    name: Apiiro Build Scan
+  diff-scan:
+    name: Apiiro Diff Scan
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Need full history for diff scan
       
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -23,31 +25,31 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
         
-    - name: Trigger Apiiro Build Scan
-      id: trigger_build_scan
+    - name: Trigger Apiiro Diff Scan
+      id: trigger_diff_scan
       env:
         APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
-        GITHUB_SHA: ${{ github.sha }}
         GITHUB_REPOSITORY_URL: https://github.com/${{ github.repository }}
-
+        CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       run: |
-        echo "Starting Apiiro build scan..."
-        python .apiiro/trigger_build_scan.py
+        echo "Starting Apiiro diff scan..."
+        python .apiiro/trigger_diff_scan.py
         
-    - name: Get Build Scan Results
+    - name: Get Diff Scan Results
       id: get_scan_results
       env:
         APIIRO_TOKEN: ${{ secrets.APIIRO_TOKEN }}
-        BUILD_ID: ${{ steps.trigger_build_scan.outputs.build_id }}
+        JOB_ID: ${{ steps.trigger_diff_scan.outputs.job_id }}
       run: |
         echo "Getting scan results..."
-        python .apiiro/get_build_scan_results.py
+        python .apiiro/get_diff_scan_results.py
 
     - name: Upload Scan Results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: scan-results
-        path: build_scan_results.json
+        name: diff-scan-results
+        path: diff_scan_results.json
         retention-days: 30
         if-no-files-found: ignore
