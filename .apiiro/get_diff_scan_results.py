@@ -4,44 +4,6 @@ import time
 import requests
 import json
 
-def request_security_review():
-    """Request review from jeremy-wagner when scan is blocked"""
-    github_token = os.getenv('GITHUB_TOKEN')
-    github_repository = os.getenv('GITHUB_REPOSITORY')
-    pr_number = os.getenv('GITHUB_PR_NUMBER')
-    
-    if not all([github_token, github_repository, pr_number]):
-        print("Warning: Cannot request review - missing GitHub environment variables")
-        return
-    
-    # Request review from jeremy-wagner
-    required_reviewer = "jeremy-wagner"
-    
-    headers = {
-        'Authorization': f'token {github_token}',
-        'Accept': 'application/vnd.github.v3+json'
-    }
-    
-    # Request review from jeremy-wagner
-    review_payload = {
-        "reviewers": [required_reviewer]
-    }
-    
-    try:
-        response = requests.post(
-            f"https://api.github.com/repos/{github_repository}/pulls/{pr_number}/requested_reviewers",
-            json=review_payload,
-            headers=headers
-        )
-        
-        if response.status_code in [201, 422]:  # 422 means already requested
-            print(f"Security review requested from: {required_reviewer}")
-        else:
-            print(f"Failed to request review: {response.status_code} - {response.text}")
-            
-    except Exception as e:
-        print(f"Error requesting review: {e}")
-
 def main():
     api_url = 'https://app-staging.apiiro.com'
     token = os.getenv('APIIRO_TOKEN')
@@ -119,10 +81,6 @@ def main():
                                 print("Blocking issues found:")
                                 for change in blocking_changes:
                                     print(f"  - {change.get('label', 'Unknown')}: {change.get('count', 0)} issues")
-                        
-                        # Request jeremy-wagner review when blocked
-                        print("Requesting security review...")
-                        request_security_review()
                         
                         return 1
                         
