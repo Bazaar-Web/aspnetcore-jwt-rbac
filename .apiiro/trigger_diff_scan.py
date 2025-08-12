@@ -36,7 +36,7 @@ def main():
     
     try:
         response = requests.post(
-            f"{api_url}/rest-api/v1/diffScan",
+            f"{api_url}/rest-api/v1/diffScans",
             json=payload,
             headers=headers,
         )

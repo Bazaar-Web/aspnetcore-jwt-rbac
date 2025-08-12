@@ -35,7 +35,7 @@ def main():
         
         try:
             response = requests.get(
-                f"{api_url}/rest-api/v1/diffScan/{job_id}/results",
+                f"{api_url}/rest-api/v1/diffScans/{job_id}",
                 headers=headers,
                 timeout=30
             )
